@@ -1,0 +1,6 @@
+
+
+
+[Function]
+    - add new 'where_regex' that matches 'LIKE' in sql, can be used to search matched regex instead of equal values
+    
