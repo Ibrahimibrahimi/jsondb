@@ -6,6 +6,7 @@ import re
 
 class Tools :
     
+    # compare if two strings are equals , match_case option
     @staticmethod
     def equals(s1:str,s2:str,match_case=True):
         return str(s1.lower() if match_case else s1) == str(s2.lower() if match_case else s2)
@@ -78,7 +79,6 @@ class JsonDB :
         self.tables = []
         
         self.load()
-        
     def load(self) :
         with open(self.path,"r") as db :
             self.tables = self.load_tables(
@@ -86,14 +86,12 @@ class JsonDB :
             )
             
             print(f"Loaded {len(self.tables)} tables : {[table.name for table in self.tables]}")
-    
     def load_tables(self,data):
         # return list of tables instance from the json data
         return [ 
                 Table(name,self.path,tabledata) 
                 for name,tabledata
-                in data["data"]["tables"].items()]
-    
+                in data["data"]["tables"].items()]  
     """ Verificators  """
     def db_should_exist(self,path:str):
         if os.path.exists(path):
@@ -108,7 +106,6 @@ class JsonDB :
         else :
             print(error)
             exit()
-        
     def find_table(self,tablename:str):
         for table in self.tables :
             if tablename == table.name :
@@ -120,22 +117,19 @@ class JsonDB :
 class JsonDbQuery(JsonDB) :
     def __init__(self, path):
         super().__init__(path)
-
-    # add query execution
-    def select(self,tablename:str):
+    # select a specific table + return
+    def select_table(self,tablename:str):
         # verify if exist
         self.load()
         self.table_should_exists(tablename,error=f"Cannot select from '{tablename}' : Table Not Found")
         return self.find_table(tablename)
-
-
 
 if __name__ == "__main__" :
     # load the database
     db = JsonDbQuery("db.json")
 
     # select a table
-    users = db.select("users") # select the table users , type=Table()
+    users = db.select_table("users") # select the table users , type=Table()
     users.select_columns(["name","password"]) # SELECT name,password from users
     print(users.columns)
     print(users.data[0]["id"]) # SELECT id from users LIMIT 1
