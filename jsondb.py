@@ -74,8 +74,23 @@ class Table :
         return result
 # using json instead of sqlite
 class JsonDB :
-    def __init__(self,path):
-        self.path = self.db_should_exist(path)    
+    def __init__(self,path,not_found_create=True,name="My database"):
+        if not_found_create and not os.path.exists(path) :
+            # create an empty db if not found
+            # ===================
+            template = {
+                "name":name,
+                "data":{
+                    "tables":{
+
+                        }
+                    }
+            }
+            with open(f"{name}.json","w") as file :
+                file.write(json.dumps(template,indent=4))
+
+
+        self.path = self.db_should_exist(path)
         self.tables = []
         
         self.load()
