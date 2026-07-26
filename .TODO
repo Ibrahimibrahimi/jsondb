@@ -2,4 +2,4 @@
 
 
 [Function]
-	- delete a table == INCLUDES ==> override() should be in the JsonDb class not in the table class
+	- create a table
