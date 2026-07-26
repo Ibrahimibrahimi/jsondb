@@ -1,29 +1,13 @@
 {
-    "name" : "My database",
-    "data" : {
-        "tables" : {
+    "name": "My database",
+    "data": {
+        "tables": {
             "users": [
                 {
-                    "id" : 5,
-                    "name" : "ibrahim",
-                    "email" : "ibrahim@gmail.com",
-                    "password" : "1234"
-                },
-                {
-                    "id":1,
-                    "name":"saad",
-                    "email" : "saad@gmail.com",
-                    "password" : "0000"
-                }
-            ],
-            "posts":[
-                {
-                    "id":1,
-                    "authorid":5,
-                    "title" : "Post of a user",
-                    "text" : "this is text of the post",
-                    "comments" : 0,
-                    "likes" : 0
+                    "id": 5,
+                    "name": "ibrahim",
+                    "email": "ibrahim@gmail.com",
+                    "password": "0000"
                 }
             ]
         }

@@ -22,6 +22,17 @@ class Table :
             if col in cols :
                 d[col] = val
         return d
+    
+    def override(self):
+        # update the table data in the db file 
+        dbData = None
+        with open(self.dbPath,"r") as db :
+            dbData = json.load(db)
+        
+        with open(self.dbPath,"w") as db :
+            dbData["data"]["tables"][self.name] = self.data
+            db.write(json.dumps(dbData,indent=4))
+            print(f"Table '{self.name}' updated successfully")
 
 
 # using json instead of sqlite
@@ -90,3 +101,6 @@ db = JsonDbQuery("db.json")
 users = db.select("users") # select the table users , type=Table()
 users.select_columns(["name","password"]) # SELECT name,password from users
 print(users.columns)
+print(users.data[0]["id"])
+users.data[0]["name"] = "ibrahim"
+users.override()
