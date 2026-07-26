@@ -73,9 +73,19 @@ class Table :
             if re.match(compiled_regex,record[column]) :
                 result.append(record)
         return result
-    def delete_table(self,create_temp=False) : # 'create_temp' creates a temporary backup
+    def delete_table(self,rc=True) : # remove cotent
         self.deleted = True
         print(f"Table '{self.name}' deleted successfully !")
+
+        if rc :
+            self.name += "[DELETED]"
+            self.data = []
+
+    def __json__(self):
+        # converts this class and data into json form
+        # data + name
+        return { self.name:self.data }
+
 
 # using json instead of sqlite
 class JsonDB :
@@ -83,14 +93,16 @@ class JsonDB :
         if not_found_create and not os.path.exists(path) :
             # create an empty db if not found
             # ===================
+            self.path = path
             template = { "name":name, "data":{"tables":{ } } }
 
-            with open(f"{name}.json","w") as file :
+            with open(path,"w") as file :
                 file.write(json.dumps(template,indent=4))
 
 
         self.path = self.db_should_exist(path)
         self.tables = []
+        self.name = name
         
         self.load()
     def load(self) :
@@ -137,6 +149,26 @@ class JsonDbQuery(JsonDB) :
         self.load()
         self.table_should_exists(tablename,error=f"Cannot select from '{tablename}' : Table Not Found")
         return self.find_table(tablename)
+    def override(self):
+        # keep only tables where the attribute 'deleted' is False
+        self.tables = [table for table in self.tables if not table.deleted]
+
+        with open(self.path,"w") as file :
+            
+            output = {
+                    "name": self.name,
+                    "data" : {
+                        # TODO create the function get_tables_as_dict
+                            "tables": self.get_tables_as_dict()
+                        }
+                    }
+            file.write(json.dumps(output,indent=4))
+    def get_tables_as_dict(self):
+        tables = {}
+        # TODO loop over non-deleted tables only
+        for table in  [t for t in self.tables if not t.deleted ]:
+            tables[table.name] = table.data
+        return tables
 
 if __name__ == "__main__" :
     # load the database
@@ -157,7 +189,15 @@ if __name__ == "__main__" :
     print("=" * 10)
     print(users.where_regex("name","[A-z]")) # Use  regex
 
+    # delete a table
+    users.delete_table()
+    db.override()
+
+
+
+
     # Test if the database not found
     
-    not_found_db = JsonDbQuery("notfound.json")
+    # not_found_db = JsonDbQuery("notfound.json")
+    
 
