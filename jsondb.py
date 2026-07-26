@@ -18,6 +18,7 @@ class Table :
         self.dbPath = dbPath # use as pointer in case you want to override or modify data
         self.data = data
         self.columns = list(self.data[0].keys())
+        self.deleted = False
     
     def column_data(self,colname:str):
         return self.data[colname]
@@ -72,20 +73,18 @@ class Table :
             if re.match(compiled_regex,record[column]) :
                 result.append(record)
         return result
+    def delete_table(self,create_temp=False) : # 'create_temp' creates a temporary backup
+        self.deleted = True
+        print(f"Table '{self.name}' deleted successfully !")
+
 # using json instead of sqlite
 class JsonDB :
     def __init__(self,path,not_found_create=True,name="My database"):
         if not_found_create and not os.path.exists(path) :
             # create an empty db if not found
             # ===================
-            template = {
-                "name":name,
-                "data":{
-                    "tables":{
+            template = { "name":name, "data":{"tables":{ } } }
 
-                        }
-                    }
-            }
             with open(f"{name}.json","w") as file :
                 file.write(json.dumps(template,indent=4))
 
