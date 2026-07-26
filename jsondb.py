@@ -2,10 +2,11 @@ import json , os
 
 
 class Table :
-    def __init__(self,name,tablejson,columns) :
+    def __init__(self,name:str,dbPath:str,data) :
         self.name = name
-        self.data = tablejson
-        self.columns = list(columns)
+        self.dbPath = dbPath # use as pointer in case you want to override or modify data
+        self.data = data
+        self.columns = list(self.data[0].keys())
     
     def get_columns(self):
         return self.columns
@@ -42,9 +43,9 @@ class JsonDB :
     def load_tables(self,data):
         # return list of tables instance from the json data
         return [ 
-                Table(name=name,tablejson=tabledata,columns=tabledata[0].keys()) 
-                for name,tabledata 
-                in data["data"]["tables"].items() ]
+                Table(name,self.path,tabledata) 
+                for name,tabledata
+                in data["data"]["tables"].items()]
     
     """ Verificators  """
     def not_found_exit(self,path:str):
@@ -86,5 +87,6 @@ class JsonDbQuery(JsonDB) :
 db = JsonDbQuery("db.json")
 
 # select a table
-users = db.select("users") # select the table users , type=Table
+users = db.select("users") # select the table users , type=Table()
 users.select_columns(["name","password"]) # SELECT name,password from users
+print(users.columns)
