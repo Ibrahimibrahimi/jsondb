@@ -2,4 +2,4 @@
 
 
 [Function]
-    - add 'create_demo_db' to create and initialise an empty database    
+	- delete a table == INCLUDES ==> override() should be in the JsonDb class not in the table class
