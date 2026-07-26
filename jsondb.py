@@ -130,8 +130,8 @@ class JsonDB :
 
 # to execute queries
 class JsonDbQuery(JsonDB) :
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, path,not_found_create=True,name="NewDb"):
+        super().__init__(path,not_found_create,name)
     # select a specific table + return
     def select_table(self,tablename:str):
         # verify if exist
@@ -157,3 +157,8 @@ if __name__ == "__main__" :
 
     print("=" * 10)
     print(users.where_regex("name","[A-z]")) # Use  regex
+
+    # Test if the database not found
+    
+    not_found_db = JsonDbQuery("notfound.json")
+
