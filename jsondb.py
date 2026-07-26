@@ -1,4 +1,7 @@
-import json , os
+import json
+import os
+import re
+
 
 
 class Tools :
@@ -19,6 +22,10 @@ class Table :
         return self.data[colname]
     def get_columns(self):
         return self.columns
+    def column_should_exist(self,colname):
+        if colname not in self.columns :
+            print(f"Error 'where' : Column '{colname}' Not found")
+            exit()
     def select_columns(self,cols:list[str]) :
         # select specific columns
         return [self._filter_by_column(record,cols) for record in self.data]
@@ -51,11 +58,23 @@ class Table :
             if Tools.equals(record[column],value,case_sensitive):
                 result.append(record)
         return result
-
+    def where_regex(self,column:str,regex:str):
+        # return records of a column that matches the value
+        result = []
+        # 1. if the column exists
+        self.column_should_exist(column)
+        
+        # 2. compile the regex
+        compiled_regex = re.compile(regex)
+        # 3. search
+        for record in self.data :
+            if re.match(compiled_regex,record[column]) :
+                result.append(record)
+        return result
 # using json instead of sqlite
 class JsonDB :
     def __init__(self,path):
-        self.path = self.not_found_exit(path)    
+        self.path = self.db_should_exist(path)    
         self.tables = []
         
         self.load()
@@ -76,14 +95,13 @@ class JsonDB :
                 in data["data"]["tables"].items()]
     
     """ Verificators  """
-    def not_found_exit(self,path:str):
+    def db_should_exist(self,path:str):
         if os.path.exists(path):
             return path
         else :
             print(f"Path {path} Not found !")
             print(os.listdir())
             exit()
-
     def table_should_exists(self,table:str,error:str):
         if table in [table.name for table in self.tables]:
             return True
@@ -111,17 +129,22 @@ class JsonDbQuery(JsonDB) :
         return self.find_table(tablename)
 
 
-# load the database
-db = JsonDbQuery("db.json")
 
-# select a table
-users = db.select("users") # select the table users , type=Table()
-users.select_columns(["name","password"]) # SELECT name,password from users
-print(users.columns)
-print(users.data[0]["id"]) # SELECT id from users LIMIT 1
-users.data[0]["name"] = "ibrahim"
-users.override() # COMMIT
+if __name__ == "__main__" :
+    # load the database
+    db = JsonDbQuery("db.json")
+
+    # select a table
+    users = db.select("users") # select the table users , type=Table()
+    users.select_columns(["name","password"]) # SELECT name,password from users
+    print(users.columns)
+    print(users.data[0]["id"]) # SELECT id from users LIMIT 1
+    users.data[0]["name"] = "ibrahim"
+    users.override() # COMMIT
 
 
-print("=" * 10)
-print(users.where("name","Ibrahim",case_sensitive=True )) # SELECT * from users ==> WHERE name=ibrahim
+    print("=" * 10)
+    print(users.where("name","Ibrahim",case_sensitive=True )) # SELECT * from users ==> WHERE name=ibrahim
+
+    print("=" * 10)
+    print(users.where_regex("name","[A-z]")) # Use  regex
