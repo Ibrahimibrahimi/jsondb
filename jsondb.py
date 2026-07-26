@@ -8,13 +8,13 @@ class Table :
         self.data = data
         self.columns = list(self.data[0].keys())
     
+    def column_data(self,colname:str):
+        return self.data[colname]
     def get_columns(self):
         return self.columns
-    
     def select_columns(self,cols:list[str]) :
         # select specific columns
         return [self._filter_by_column(record,cols) for record in self.data]
-    
     def _filter_by_column(self,record:dict,cols: list[str]):
         # take a record (single json) and return the same but with specific columns
         d = {}
@@ -22,7 +22,6 @@ class Table :
             if col in cols :
                 d[col] = val
         return d
-    
     def override(self):
         # update the table data in the db file 
         dbData = None
@@ -33,7 +32,18 @@ class Table :
             dbData["data"]["tables"][self.name] = self.data
             db.write(json.dumps(dbData,indent=4))
             print(f"Table '{self.name}' updated successfully")
-
+    def where(self,column:str,value:str,case_sensitive=False):
+        # return records of a column that matches the value
+        result = []
+        # 1. if the column exists
+        if column not in self.columns :
+            print(f"Error 'where' : Column '{column}' Not found")
+        
+        # 2. search
+        for record in self.data :
+            if record[column] == value :
+                result.append(record)
+        return result
 
 # using json instead of sqlite
 class JsonDB :
@@ -104,3 +114,7 @@ print(users.columns)
 print(users.data[0]["id"])
 users.data[0]["name"] = "ibrahim"
 users.override()
+
+
+print("=" * 10)
+print(users.where("name","ibrahim"))
