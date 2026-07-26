@@ -1,6 +1,13 @@
 import json , os
 
 
+class Tools :
+    
+    @staticmethod
+    def equals(s1:str,s2:str,match_case=True):
+        return str(s1.lower() if match_case else s1) == str(s2.lower() if match_case else s2)
+
+
 class Table :
     def __init__(self,name:str,dbPath:str,data) :
         self.name = name
@@ -41,7 +48,7 @@ class Table :
         
         # 2. search
         for record in self.data :
-            if record[column] == value :
+            if Tools.equals(record[column],value,case_sensitive):
                 result.append(record)
         return result
 
@@ -111,10 +118,10 @@ db = JsonDbQuery("db.json")
 users = db.select("users") # select the table users , type=Table()
 users.select_columns(["name","password"]) # SELECT name,password from users
 print(users.columns)
-print(users.data[0]["id"])
+print(users.data[0]["id"]) # SELECT id from users LIMIT 1
 users.data[0]["name"] = "ibrahim"
-users.override()
+users.override() # COMMIT
 
 
 print("=" * 10)
-print(users.where("name","ibrahim"))
+print(users.where("name","Ibrahim",case_sensitive=True )) # SELECT * from users ==> WHERE name=ibrahim
