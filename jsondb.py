@@ -39,15 +39,10 @@ class Table :
                 d[col] = val
         return d
     def override(self):
-        # update the table data in the db file 
-        dbData = None
-        with open(self.dbPath,"r") as db :
-            dbData = json.load(db)
+        print("Override()  from Table class is deprecated, please use it from the JsonDbQuery class ! ")
+        return
         
-        with open(self.dbPath,"w") as db :
-            dbData["data"]["tables"][self.name] = self.data
-            db.write(json.dumps(dbData,indent=4))
-            print(f"Table '{self.name}' updated successfully")
+
     def where(self,column:str,value:str,case_sensitive=False):
         # return records of a column that matches the value
         result = []
@@ -192,6 +187,7 @@ if __name__ == "__main__" :
     # delete a table
     users.delete_table()
     db.override()
+    
 
 
 
