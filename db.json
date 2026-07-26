@@ -1,15 +1,6 @@
 {
-    "name": "My database",
+    "name": "NewDb",
     "data": {
-        "tables": {
-            "users": [
-                {
-                    "id": 5,
-                    "name": "ibrahim",
-                    "email": "ibrahim@gmail.com",
-                    "password": "0000"
-                }
-            ]
-        }
+        "tables": {}
     }
 }
